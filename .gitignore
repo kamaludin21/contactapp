@@ -4,7 +4,10 @@ node_modules
 
 
 # local env files
+.env
 .env.local
+# IF USE VERCEL
+.env.production
 .env.*.local
 
 # Log files
