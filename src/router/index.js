@@ -36,6 +36,21 @@ const routes = [
         name: "Beranda",
         component: () => import("./../views/Beranda.vue"),
       },
+      {
+        path: "kontakbaru",
+        name: "KontakBaru",
+        component: () => import("./../views/KontakBaru.vue"),
+      },
+      {
+        path: "/kontak/:id",
+        name: "Edit",
+        component: () => import("./../views/KontakBaru.vue"),
+      },
+      {
+        path: "profil",
+        name: "Profile",
+        component: () => import("./../views/Profile.vue"),
+      },
     ],
   },
 ];
