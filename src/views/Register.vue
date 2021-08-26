@@ -4,6 +4,9 @@
       <h1 class="text-lg font-bold tracking-wide">REGISTER</h1>
       <p class="text-xs tracking-wide font-light">Fill with your personal data</p>
     </div>
+    <div v-if="!error" class="p-2 rounded-lg bg-red-200 leading-5 font-medium text-sm">
+      {{ error }}
+    </div>
     <div
       class="form-control"
       :class="errors.includes('name') ? 'ring-error' : ''"

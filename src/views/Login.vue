@@ -4,6 +4,9 @@
       <h1 class="text-lg font-bold tracking-wide">LOGIN</h1>
       <p class="text-xs font-light">Sign in with your credential</p>
     </div>
+    <div v-if="error" class="p-2 rounded-lg bg-red-200 leading-5 font-medium text-sm">
+      {{ error }}
+    </div>
     <div
       class="form-control"
       :class="errors.includes('email') ? 'ring-error' : ''"
