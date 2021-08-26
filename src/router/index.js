@@ -37,7 +37,7 @@ const routes = [
         component: () => import("./../views/Beranda.vue"),
       },
       {
-        path: "kontakbaru",
+        path: "/kontakbaru",
         name: "KontakBaru",
         component: () => import("./../views/KontakBaru.vue"),
       },
