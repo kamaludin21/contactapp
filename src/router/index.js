@@ -47,9 +47,24 @@ const routes = [
         component: () => import("./../views/KontakBaru.vue"),
       },
       {
-        path: "profil",
+        path: "/profil",
         name: "Profile",
         component: () => import("./../views/Profile.vue"),
+      },
+      {
+        path: "/profil/edit",
+        name: "EditProfil",
+        component: () => import('../views/EditProfile.vue')
+      },
+      {
+        path: "/profil/security",
+        name: "Password",
+        component: () => import('../views/Security.vue')
+      },
+      {
+        path: "/feedback",
+        name: "Feedback",
+        component: () => import('../views/Feedback.vue')
       },
     ],
   },

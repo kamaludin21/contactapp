@@ -1,10 +1,12 @@
 <template>
   <app-bar title="Kontak Baru" />
   <loading v-if="loading" />
+  <!-- tampilkan pesan response api -->
   <alert-states
     v-if="ifAlert"
     isAction="warning"
-    title="Gagal menambah kontaks"
+    
+    title="API MESSAGE"
     @onClick="removeAlert"
   />
   <div class="bg-rounded-white p-4 mb-2 space-y-2">
@@ -21,7 +23,7 @@
         type="text"
         ref="name"
         v-model="name"
-        placeholder="Nama anda"
+        placeholder="Nama kontak"
       />
     </div>
     <error-input
@@ -42,7 +44,7 @@
         class="form-input"
         type="number"
         v-model="phone"
-        placeholder="Nomor telepon anda"
+        placeholder="Nomor telepon kontak"
       />
     </div>
     <error-input
@@ -119,7 +121,5 @@ export default {
 </script>
 
 <style lang="postcss">
-.button-form {
-  @apply flex-1 py-2 text-center focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-lg font-semibold tracking-wide hover:shadow-lg;
-}
+
 </style>

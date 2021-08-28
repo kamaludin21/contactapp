@@ -13,26 +13,26 @@
       <ul class="divide-y divide-gray-200 divide-solid">
         <router-link class="profile-menu-wrapper group" to="/profil/edit">
           <circle-user-icon class="profile-menu-icon" />
-          <p class="profile-menu-title">Change Profile</p>
+          <p class="profile-menu-title">Change Profile - {{ this.$store.state.confirmLogout }}</p>
         </router-link>
         <router-link to="/profil/security" class="profile-menu-wrapper group">
           <lock-icon class="profile-menu-icon" />
-          <p class="profile-menu-title">Security</p>
+          <p class="profile-menu-title">Security -  {{ this.$store.state.confirmAboutApp }}</p>
         </router-link>
       </ul>
     </div>
     <p class="section-title">Lainnya</p>
     <div class="border-t border-gray-200">
       <ul class="divide-y divide-gray-200 divide-solid">
-        <router-link to="/report" class="profile-menu-wrapper group">
+        <router-link to="/feedback" class="profile-menu-wrapper group">
           <analytic-icon class="profile-menu-icon" />
           <p class="profile-menu-title">Report &#38; Feedback</p>
         </router-link>
-        <li class="profile-menu-wrapper group" @click="about">
+        <li class="profile-menu-wrapper group" @click="showDialog('about')">
           <info-icon class="profile-menu-icon" />
           <p class="profile-menu-title">About</p>
         </li>
-        <li class="profile-menu-wrapper group" @click="alert">
+        <li class="profile-menu-wrapper group" @click="showDialog('logout')">
           <exit-icon class="profile-menu-icon" />
           <p class="profile-menu-title">Log Out</p>
         </li>
@@ -43,7 +43,7 @@
 
 <script>
 import CircleImageProfile from "../components/CircleImageProfile.vue";
-import LockIcon from '../components/icons/LockIcon.vue';
+import LockIcon from "../components/icons/LockIcon.vue";
 import Loading from "../components/Loading.vue";
 import AppBar from "./../components/AppBar.vue";
 import CircleUserIcon from "./../components/icons/CircleUserIcon.vue";
@@ -68,7 +68,15 @@ export default {
     LockIcon,
     AnalyticIcon,
     InfoIcon,
-    ExitIcon
+    ExitIcon,
+  },
+  methods: {
+    showDialog: function(type) {
+      console.log(type);
+      this.$store.commit("POPUP_DIALOG")
+      if (type == "about") return this.$store.commit("ABOUT_APP");
+      if (type == "logout") return this.$store.commit("CONFIRM_LOGOUT");
+    },
   },
 };
 </script>
