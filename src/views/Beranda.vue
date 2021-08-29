@@ -50,7 +50,13 @@ export default {
   data() {
     return {
       loading: false,
-      contacts: [],
+      contacts: [
+        {
+          id: 'edi',
+          name: 'Sugiman',
+          phone: 'failed load'
+        }
+      ],
       searchQuery: null,
     };
   },
