@@ -13,7 +13,7 @@
       <router-link
         to="/auth/register"
         @click="loginStatus"
-        class="font-semibold tracking-wide text-blue-600 hover:text-blue-800 hover:underline"
+        class="font-semibold tracking-wide text-blue-700 hover:text-blue-800 hover:underline"
         >Register now</router-link
       >
     </p>
@@ -22,7 +22,7 @@
       <router-link
         to="/auth/login"
         @click="loginStatus"
-        class="font-semibold tracking-wide text-blue-600 hover:text-blue-800 hover:underline"
+        class="font-semibold tracking-wide text-blue-700 hover:text-blue-800 hover:underline"
         >Login now</router-link
       >
     </p>

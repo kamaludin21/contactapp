@@ -12,9 +12,9 @@
           placeholder="Ketik sesuatu"
         />
       </div>
-      <button class="adjust-icon">
+      <!-- <button class="adjust-icon">
         <adjustments-icon class="mx-2 my-3" />
-      </button>
+      </button> -->
     </div>
     <contacts :contacts="getContacts" />
   </div>
@@ -30,13 +30,13 @@ import Loading from "./../components/Loading.vue";
 import Contacts from "./../components/Contacts.vue";
 import EmptyStates from "./../components/states/EmptyStates.vue";
 import SearchIcon from "./../components/icons/SearchIcon.vue";
-import AdjustmentsIcon from "./../components/icons/AdjustmentsIcon.vue";
+// import AdjustmentsIcon from "./../components/icons/AdjustmentsIcon.vue";
 
 export default {
   name: "Beranda",
   components: {
     "search-icon": SearchIcon,
-    "adjustments-icon": AdjustmentsIcon,
+    // "adjustments-icon": AdjustmentsIcon,
     "app-bar": AppBar,
     "empty-states": EmptyStates,
     contacts: Contacts,

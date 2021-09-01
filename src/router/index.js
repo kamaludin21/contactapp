@@ -42,9 +42,9 @@ const routes = [
         component: () => import("./../views/KontakBaru.vue"),
       },
       {
-        path: "/kontak/:id",
-        name: "Edit",
-        component: () => import("./../views/KontakBaru.vue"),
+        path: "/kontak/edit",
+        name: "EditKontak",
+        component: () => import("./../views/EditKontak.vue"),
       },
       {
         path: "/profil",
@@ -62,7 +62,7 @@ const routes = [
         component: () => import('../views/Security.vue')
       },
       {
-        path: "/feedback",
+        path: "/profil/feedback",
         name: "Feedback",
         component: () => import('../views/Feedback.vue')
       },

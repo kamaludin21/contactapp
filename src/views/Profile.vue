@@ -13,18 +13,18 @@
       <ul class="divide-y divide-gray-200 divide-solid">
         <router-link class="profile-menu-wrapper group" to="/profil/edit">
           <circle-user-icon class="profile-menu-icon" />
-          <p class="profile-menu-title">Change Profile - {{ this.$store.state.confirmLogout }}</p>
+          <p class="profile-menu-title">Change Profile</p>
         </router-link>
         <router-link to="/profil/security" class="profile-menu-wrapper group">
           <lock-icon class="profile-menu-icon" />
-          <p class="profile-menu-title">Security -  {{ this.$store.state.confirmAboutApp }}</p>
+          <p class="profile-menu-title">Security</p>
         </router-link>
       </ul>
     </div>
     <p class="section-title">Lainnya</p>
     <div class="border-t border-gray-200">
       <ul class="divide-y divide-gray-200 divide-solid">
-        <router-link to="/feedback" class="profile-menu-wrapper group">
+        <router-link to="/profil/feedback" class="profile-menu-wrapper group">
           <analytic-icon class="profile-menu-icon" />
           <p class="profile-menu-title">Report &#38; Feedback</p>
         </router-link>
@@ -72,7 +72,6 @@ export default {
   },
   methods: {
     showDialog: function(type) {
-      console.log(type);
       this.$store.commit("POPUP_DIALOG")
       if (type == "about") return this.$store.commit("ABOUT_APP");
       if (type == "logout") return this.$store.commit("CONFIRM_LOGOUT");

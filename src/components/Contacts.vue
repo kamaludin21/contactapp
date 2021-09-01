@@ -19,7 +19,8 @@
         </p>
       </div>
       
-      <router-link :to="{ name: 'Edit', params: {id: contact.id}}" >
+      <!-- <router-link :to="{ name: 'Edit', params: {id: contact.id}}" > -->
+      <router-link to="/kontak/edit" >
         <edit-icon  />
       </router-link>
     </li>
@@ -43,7 +44,7 @@ export default {
       return `${name[0].charAt(0)}${name[1] ? name[1].charAt(0) : ""}`;
     },
     fullView: function(){
-      console.log('he')
+      // Code full view number
     }
   },
 };

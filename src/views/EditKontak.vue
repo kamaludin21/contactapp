@@ -1,5 +1,14 @@
 <template>
-  <app-bar title="Kontak Baru" />
+  <app-bar title="Edit Kontak">
+    <template v-slot:back>
+      <div
+        class="h-full hover:text-blue-700 flex items-center pr-1 cursor-pointer"
+        @click="$router.go(-1)"
+      >
+        <arrow-left-icon />
+      </div>
+    </template>
+  </app-bar>
   <loading v-if="loading" />
   <!-- tampilkan pesan response api -->
   <alert-states
@@ -74,9 +83,10 @@ import Loading from "../components/Loading.vue";
 import AlertStates from "../components/states/AlertStates.vue";
 import ErrorInput from "../components/states/ErrorInput.vue";
 import AppBar from "./../components/AppBar.vue";
+import ArrowLeftIcon from '../components/icons/ArrowLeftIcon.vue';
 
 export default {
-  name: "KontakBaru",
+  name: "EditKontak",
   components: {
     AppBar,
     AlertStates,
@@ -84,6 +94,7 @@ export default {
     UserIcon,
     PhoneIcon,
     ErrorInput,
+    ArrowLeftIcon,
   },
   mounted() {
     this.focusForm();

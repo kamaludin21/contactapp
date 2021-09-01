@@ -1,7 +1,7 @@
 <template>
   <div class="flex-shrink-0 flex text-gray-600 mt-auto bg-rounded-white">
     <div class="flex-1 group">
-      <router-link to="/beranda" class="link-wrapper" exact router-link-active="active">
+      <router-link to="/beranda" :class="isHome ? 'active': ''" class="link-wrapper">
         <home-icon />
         <span class="link-title">Beranda </span>
         <span class="link-badge"></span>
@@ -15,7 +15,7 @@
       </router-link>
     </div>
     <div class="flex-1 group">
-      <router-link to="/profil" class="link-wrapper"  router-link-active="active">
+      <router-link to="/profil" class="link-wrapper" :class="isProfile ? 'active': ''">
         <user-icon />
         <span class="link-title">Profil</span>
         <span class="link-badge"></span>
@@ -36,6 +36,24 @@ export default {
     'plus-icon': PlusIcon,
     'user-icon': UserIcon
   },
+  computed: {
+    isHome() {
+      let path = this.$route.path;
+      if(path.includes('/kontak/')) {
+        return true 
+      } else {
+        return false
+      }
+    },
+    isProfile() {
+      let path = this.$route.path;
+      if(path.includes('/profil/')) {
+        return true 
+      } else {
+        return false
+      }
+    }
+  }
 };
 </script>
 
