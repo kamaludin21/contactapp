@@ -2,9 +2,14 @@
   <form class="p-4 space-y-2 bg-rounded-white" @submit.prevent="register">
     <div class="leading-none border-b-2 mb-4 pb-1">
       <h1 class="text-lg font-bold tracking-wide">REGISTER</h1>
-      <p class="text-xs tracking-wide font-light">Fill with your personal data</p>
+      <p class="text-xs tracking-wide font-light">
+        Fill with your personal data
+      </p>
     </div>
-    <div v-if="error" class="p-2 rounded-lg bg-red-200 leading-5 font-medium text-sm">
+    <div
+      v-if="error"
+      class="p-2 rounded-lg bg-red-200 leading-5 font-medium text-sm"
+    >
       {{ error }}
     </div>
     <div
@@ -85,6 +90,16 @@ import LockIcon from "./../components/icons/LockIcon.vue";
 import AtIcon from "./../components/icons/AtIcon.vue";
 import ErrorInput from "./../components/states/ErrorInput.vue";
 import AuthAction from "./../components/AuthAction.vue";
+import store from "./../store";
+import firebaseApp from "./../firebaseinit";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  onAuthStateChanged,
+  updateProfile,
+  reload,
+} from "firebase/auth";
+const auth = getAuth(firebaseApp);
 
 export default {
   name: "Register",
@@ -112,7 +127,23 @@ export default {
       this.errors = [];
 
       if (this.email && this.password) {
-        // Code
+        this.isProcess = !this.isProcess;
+        createUserWithEmailAndPassword(auth, this.email, this.password)
+          .then(() => {
+            updateProfile(auth.currentUser, {
+              displayName: this.name,
+            }).then(() => {
+              reload(auth.currentUser).then(() => {
+                onAuthStateChanged(auth, (user) => {
+                  store.dispatch("fetchUser", user);
+                });
+                this.$router.push({ path: "/beranda" });
+              });
+            });
+          })
+          .catch((error) => {
+            this.error = error.message;
+          });
       }
       if (!this.name) this.errors.push("name");
       if (!this.email) this.errors.push("email");

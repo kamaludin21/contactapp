@@ -1,11 +1,10 @@
 <template>
   <app-bar title="Profile" />
-  <loading v-if="loading" />
   <div class="max-h-full overflow-y-auto bg-rounded-white mb-2">
     <circle-image-profile
-      displayName="Kamaludin"
-      email="kamaludin@mail.com"
-      photoUrl="https://ui-avatars.com/api/?background=2563EB&color=fff&name=Kamaludin"
+      :displayName=user.data.displayName
+      :email=user.data.email
+      :photoUrl="(user.data.photoURL) ? user.data.photoURL : 'https://ui-avatars.com/api/?background=2563EB&color=fff&name='+ user.data.displayName +''"
     />
     <!-- List  -->
     <p class="section-title">Akun</p>
@@ -44,26 +43,23 @@
 <script>
 import CircleImageProfile from "../components/CircleImageProfile.vue";
 import LockIcon from "../components/icons/LockIcon.vue";
-import Loading from "../components/Loading.vue";
 import AppBar from "./../components/AppBar.vue";
 import CircleUserIcon from "./../components/icons/CircleUserIcon.vue";
 import AnalyticIcon from "./../components/icons/AnalyticIcon.vue";
 import InfoIcon from "./../components/icons/InfoIcon.vue";
 import ExitIcon from "./../components/icons/ExitIcon.vue";
+import { mapGetters } from "vuex"
 
 export default {
   name: "Profile",
-  data() {
-    return {
-      loading: false,
-      contacts: [],
-      searchQuery: null,
-    };
+  computed: {
+    ...mapGetters({
+      user: 'user'
+    })
   },
   components: {
     AppBar,
     CircleImageProfile,
-    Loading,
     CircleUserIcon,
     LockIcon,
     AnalyticIcon,

@@ -6,7 +6,7 @@
   <div class="flex space-x-4 mt-6 justify-center">
     <button
       class="flex-1 py-2 text-sm font-bold px-8 text-white bg-blue-600 hover:bg-blue-800 rounded-lg"
-      @click=closeDialog
+      @click="closeDialog"
     >
       CANCEL
     </button>
@@ -20,13 +20,28 @@
 </template>
 
 <script>
+import firebaseApp from "./../firebaseinit"
+import { getAuth, signOut } from "firebase/auth";
+const auth = getAuth(firebaseApp);
+
 export default {
-  name: 'ConfirmDialog',
+  name: "ConfirmDialog",
   methods: {
+    signOut: function() {
+      signOut(auth)
+        .then(() => {
+          this.$router.push({ path: "/auth/login" });
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      this.$store.commit("POPUP_DIALOG");
+      this.$store.commit("CONFIRM_LOGOUT");
+    },
     closeDialog: function() {
-      this.$store.commit("POPUP_DIALOG")
+      this.$store.commit("POPUP_DIALOG");
       this.$store.commit("CONFIRM_LOGOUT");
     },
   },
-}
+};
 </script>

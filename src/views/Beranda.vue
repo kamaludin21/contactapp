@@ -25,40 +25,72 @@
 </template>
 
 <script>
+import app from "./../firebaseinit";
+import { getFirestore, collection, query, getDocs } from "firebase/firestore";
+const db = getFirestore(app);
+
 import AppBar from "./../components/AppBar.vue";
 import Loading from "./../components/Loading.vue";
 import Contacts from "./../components/Contacts.vue";
 import EmptyStates from "./../components/states/EmptyStates.vue";
 import SearchIcon from "./../components/icons/SearchIcon.vue";
-// import AdjustmentsIcon from "./../components/icons/AdjustmentsIcon.vue";
 
 export default {
   name: "Beranda",
   components: {
-    "search-icon": SearchIcon,
-    // "adjustments-icon": AdjustmentsIcon,
-    "app-bar": AppBar,
-    "empty-states": EmptyStates,
-    contacts: Contacts,
-    loading: Loading,
-  },
-  computed: {
-    getContacts() {
-      return this.contacts;
-    },
+    SearchIcon,
+    AppBar,
+    EmptyStates,
+    Contacts,
+    Loading,
   },
   data() {
     return {
       loading: false,
-      contacts: [
-        {
-          id: 'edi',
-          name: 'Sugiman',
-          phone: 'failed load'
-        }
-      ],
+      contacts: [],
       searchQuery: null,
     };
+  },
+  mounted() {
+    this.readContacts();
+  },
+  computed: {
+    getContacts() {
+      if (this.searchQuery) {
+        return this.contacts.filter((item) => {
+          return this.searchQuery
+            .toLowerCase()
+            .split(" ")
+            .every(
+              (v) =>
+                item.name.toLowerCase().includes(v) || item.phone.includes(v)
+            );
+        });
+      } else {
+        return this.contacts;
+      }
+    },
+  },
+  methods: {
+    readContacts: async function() {
+      this.loading = true;
+      const q = query(collection(db, "contacts"));
+      await getDocs(q)
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            this.contacts.push({
+              id: doc.id,
+              name: doc.data().name,
+              phone: doc.data().phone,
+            });
+          });
+          this.loading = false;
+        })
+        .catch(() => {
+          this.loading = false;
+          // console.log("Error getting documents, " + error);
+        });
+    },
   },
 };
 </script>

@@ -65,6 +65,10 @@ import LockIcon from "./../components/icons/LockIcon.vue";
 import ErrorInput from "./../components/states/ErrorInput.vue";
 import AuthAction from "./../components/AuthAction.vue";
 
+import firebaseApp from "./../firebaseinit";
+import { browserLocalPersistence, getAuth, setPersistence, signInWithEmailAndPassword } from "firebase/auth";
+const auth = getAuth(firebaseApp)
+
 export default {
   name: "Login",
   components: {
@@ -89,11 +93,36 @@ export default {
       this.errors = [];
 
       if (this.email && this.password) {
-        console.log("process");
+        this.isProcess = !this.isProcess;
+        setPersistence(auth, browserLocalPersistence).then( async() => {
+          try {
+             await signInWithEmailAndPassword(auth, this.email, this.password)
+             this.$router.push({ path: "/beranda" });
+          } catch (e) {
+            this.isProcess = false;
+            this.error = e.message
+          }
+        }).catch((e) => {
+          this.isProcess = false
+          this.error = e.message
+        })
+        // auth.setPersistence(firebaseApp.auth.setPersistence.LOCAL).then(async () => {
+        //   try  {
+        //     await auth.SignInWithEmailandPassword(this.email, this.password)
+        //   } catch(err) {
+        //     this.isProcess = false;
+        //     this.error=err.message;
+        //   }
+        // }).catch((error) => {
+        //   this.isProcess = false;
+        //   this.error = error.message;
+        // })
       }
       if (!this.email) this.errors.push("email");
       if (!this.password) this.errors.push("password");
+      this.isProcess = !this.isProcess;
     },
   },
 };
 </script>
+

@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
+import firebaseApp from "./../firebaseinit";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const routes = [
   {
@@ -54,19 +56,22 @@ const routes = [
       {
         path: "/profil/edit",
         name: "EditProfil",
-        component: () => import('../views/EditProfile.vue')
+        component: () => import("../views/EditProfile.vue"),
       },
       {
         path: "/profil/security",
         name: "Password",
-        component: () => import('../views/Security.vue')
+        component: () => import("../views/Security.vue"),
       },
       {
         path: "/profil/feedback",
         name: "Feedback",
-        component: () => import('../views/Feedback.vue')
+        component: () => import("../views/Feedback.vue"),
       },
     ],
+    meta: {
+      requiresAuth: true,
+    },
   },
 ];
 
@@ -74,6 +79,31 @@ const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   linkActiveClass: "active",
   routes,
+});
+
+function authUser() {
+  const auth = getAuth(firebaseApp);
+  return new Promise((resolve) => {
+    onAuthStateChanged(auth, (user) => {
+      if (!user) resolve(false);
+      else resolve(true);
+    });
+  });
+}
+
+router.beforeEach(async (to, from, next) => {
+  const userAuth = await authUser();
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
+  if (requiresAuth && !userAuth) {
+    next("/auth/login");
+  } else if (requiresAuth && userAuth) {
+    next();
+  } else if (!requiresAuth && userAuth) {
+    next("/beranda");
+  } else {
+    next();
+  }
 });
 
 export default router;
