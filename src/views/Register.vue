@@ -126,7 +126,7 @@ export default {
       this.error = null;
       this.errors = [];
 
-      if (this.email && this.password) {
+      if (this.name && this.email && this.password) {
         this.isProcess = !this.isProcess;
         createUserWithEmailAndPassword(auth, this.email, this.password)
           .then(() => {
@@ -142,12 +142,15 @@ export default {
             });
           })
           .catch((error) => {
+            this.isProcess = false;
             this.error = error.message;
           });
       }
       if (!this.name) this.errors.push("name");
       if (!this.email) this.errors.push("email");
       if (!this.password) this.errors.push("password");
+      this.isProcess = !this.isProcess;
+
     },
   },
 };

@@ -106,17 +106,6 @@ export default {
           this.isProcess = false
           this.error = e.message
         })
-        // auth.setPersistence(firebaseApp.auth.setPersistence.LOCAL).then(async () => {
-        //   try  {
-        //     await auth.SignInWithEmailandPassword(this.email, this.password)
-        //   } catch(err) {
-        //     this.isProcess = false;
-        //     this.error=err.message;
-        //   }
-        // }).catch((error) => {
-        //   this.isProcess = false;
-        //   this.error = error.message;
-        // })
       }
       if (!this.email) this.errors.push("email");
       if (!this.password) this.errors.push("password");
