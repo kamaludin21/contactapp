@@ -44,7 +44,7 @@ const routes = [
         component: () => import("./../views/KontakBaru.vue"),
       },
       {
-        path: "/kontak/edit",
+        path: "/kontak/:id",
         name: "EditKontak",
         component: () => import("./../views/EditKontak.vue"),
       },

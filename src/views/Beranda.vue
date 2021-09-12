@@ -25,15 +25,15 @@
 </template>
 
 <script>
-import app from "./../firebaseinit";
-import { getFirestore, collection, query, getDocs } from "firebase/firestore";
-const db = getFirestore(app);
-
 import AppBar from "./../components/AppBar.vue";
 import Loading from "./../components/Loading.vue";
 import Contacts from "./../components/Contacts.vue";
 import EmptyStates from "./../components/states/EmptyStates.vue";
 import SearchIcon from "./../components/icons/SearchIcon.vue";
+import { mapGetters } from "vuex"
+import app from "./../firebaseinit";
+import { getFirestore, collection, query, getDocs } from "firebase/firestore";
+const db = getFirestore(app);
 
 export default {
   name: "Beranda",
@@ -55,6 +55,9 @@ export default {
     this.readContacts();
   },
   computed: {
+    ...mapGetters({
+      user: 'user'
+    }),
     getContacts() {
       if (this.searchQuery) {
         return this.contacts.filter((item) => {
@@ -74,7 +77,8 @@ export default {
   methods: {
     readContacts: async function() {
       this.loading = true;
-      const q = query(collection(db, "contacts"));
+      const uid = this.$store.state.user.data.uid
+      const q = query(collection(db, uid));
       await getDocs(q)
         .then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
@@ -88,7 +92,6 @@ export default {
         })
         .catch(() => {
           this.loading = false;
-          // console.log("Error getting documents, " + error);
         });
     },
   },

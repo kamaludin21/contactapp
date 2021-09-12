@@ -37,6 +37,7 @@ export default createStore({
       commit("SET_LOGGED_IN", user !== null);
       if (user) {
         commit("SET_USER", {
+          uid: user.uid,
           displayName: user.displayName,
           email: user.email,
           photoUrl: user.photoUrl,
@@ -45,5 +46,8 @@ export default createStore({
         commit("SET_USER", null);
       }
     },
+    logout({commit}) {
+      commit("SET_USER", null)
+    }
   },
 });

@@ -5,11 +5,16 @@
   <alert-states
     v-if="ifAlert"
     isAction="warning"
-    
-    title="API MESSAGE"
+    :title="error"
     @onClick="removeAlert"
   />
-  <div class="bg-rounded-white p-4 mb-2 space-y-2">
+  <alert-states
+    v-if="isSuccess"
+    isAction="success"
+    title="Berhasil menambah kontak"
+    @onClick="removeAlert"
+  />
+  <div class="bg-rounded-white px-3 py-4 mb-2 space-y-2" v-if="!loading">
     <div
       class="form-control"
       :class="errors.includes('name') ? 'ring-error' : ''"
@@ -54,7 +59,7 @@
       errorUnit="phone"
     />
     <div class="flex w-full space-x-2 items-center pt-2">
-      <button class="button-form bg-blue-50 ring-inset" @click=reset>
+      <button class="button-form bg-blue-50 ring-inset" @click="reset">
         RESET
       </button>
       <button
@@ -74,7 +79,11 @@ import Loading from "../components/Loading.vue";
 import AlertStates from "../components/states/AlertStates.vue";
 import ErrorInput from "../components/states/ErrorInput.vue";
 import AppBar from "./../components/AppBar.vue";
+import app from "./../firebaseinit";
+import { addDoc, getFirestore, collection } from "firebase/firestore";
 
+const db = getFirestore(app);
+const { nanoid } = require("nanoid");
 export default {
   name: "KontakBaru",
   components: {
@@ -90,28 +99,51 @@ export default {
   },
   data() {
     return {
+      id: nanoid(10),
       loading: false,
       ifAlert: false,
+      isSuccess: false,
       errors: [],
-      name: "",
-      phone: "",
+      error: "",
+      name: null,
+      phone: null,
       searchQuery: null,
+      success: false,
     };
   },
   methods: {
     focusForm: function() {
       this.$refs.name.focus();
     },
-    saveContact: function() {
+    saveContact: async function() {
       this.errors = [];
+      const uid = this.$store.state.user.data.uid;
+      
       if (this.name && this.phone) {
-        // CODE
+        this.loading = !this.loading;
+        try {
+          await addDoc(collection(db, uid),{
+            id: this.id,
+            name: this.name,
+            phone: this.phone
+          })
+          this.name = ""
+          this.phone = ""
+        } catch (error) {
+          this.ifAlert = !this.ifAlert
+          this.error = error
+        } finally {
+          this.loading = !this.loading
+          this.isSuccess = !this.isSuccess
+        }
+      } else {
+        if (!this.name) this.errors.push("name");
+        if (!this.phone) this.errors.push("phone");
       }
-      if (!this.name) this.errors.push("name");
-      if (!this.phone) this.errors.push("phone");
     },
     removeAlert: function() {
-      this.ifAlert = !this.ifAlert;
+      this.ifAlert = false;
+      this.isSuccess = false;
     },
     reset: function() {
       (this.name = null), (this.errors = []), (this.phone = null);
@@ -120,6 +152,4 @@ export default {
 };
 </script>
 
-<style lang="postcss">
-
-</style>
+<style lang="postcss"></style>

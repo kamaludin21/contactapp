@@ -55,7 +55,7 @@ export default {
   computed: {
     ...mapGetters({
       user: 'user'
-    })
+    }),
   },
   components: {
     AppBar,

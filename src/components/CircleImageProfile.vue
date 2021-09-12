@@ -16,7 +16,10 @@
 export default {
   name: 'CircleImageProfile',
   props: {
-    photoUrl: String,
+    photoUrl: {
+      type: String, 
+      default: ''
+    },
     displayName: String,
     email: String,
   }

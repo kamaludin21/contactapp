@@ -106,6 +106,8 @@ import ArrowLeftIcon from "../components/icons/ArrowLeftIcon.vue";
 import UserIcon from "../components/icons/UserIcon.vue";
 import ErrorInput from "../components/states/ErrorInput.vue";
 
+import { getAuth } from "firebase/auth";
+
 export default {
   components: { AppBar, ArrowLeftIcon, ErrorInput, UserIcon },
   name: "EditProfile",
@@ -113,12 +115,37 @@ export default {
     return {
       errors: [],
       photoURL: null,
-      nama: "Wajidu Mckenny",
+      nama: null,
       files: null,
       previewUrl: null,
     };
   },
+  mounted() {
+    this.currentUser();
+  },
   methods: {
+    currentUser: function() {
+      const auth = getAuth();
+      const user = auth.currentUser;
+      if (user !== null) {
+        this.nama = user.displayName;
+        this.photoURL = user.photoURL;
+      }
+    },
+    updateProfil: function() {
+      // import { getAuth, updateProfile } from "firebase/auth";
+      // const auth = getAuth();
+      // updateProfile(auth.currentUser, {
+      //   displayName: "Jane Q. User", photoURL: "https://example.com/jane-q-user/profile.jpg"
+      // }).then(() => {
+      // Profile updated!
+      // ...
+      // }).catch((error) => {
+      // An error occurred
+      // ...
+      // });
+    },
+
     onFileChange: function(e) {
       this.files = e.target.files[0].name;
       const file = e.target.files[0];
@@ -133,7 +160,7 @@ export default {
     },
     reset: function() {
       (this.files = null), (this.previewUrl = null);
-    }
+    },
   },
 };
 </script>

@@ -19,8 +19,7 @@
         </p>
       </div>
       
-      <!-- <router-link :to="{ name: 'Edit', params: {id: contact.id}}" > -->
-      <router-link to="/kontak/edit" >
+      <router-link :to="{ name: 'EditKontak', params: {id: contact.id} }" >
         <edit-icon  />
       </router-link>
     </li>
@@ -40,8 +39,12 @@ export default {
   },
   methods: {
     getUserInitial(username) {
-      const name = username.split(" ");
-      return `${name[0].charAt(0)}${name[1] ? name[1].charAt(0) : ""}`;
+      if(!username) {
+        return '00'
+      } else {
+        const name = username.split(" ");
+        return `${name[0].charAt(0)}${name[1] ? name[1].charAt(0) : ""}`;
+      }
     },
     fullView: function(){
       // Code full view number

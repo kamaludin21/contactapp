@@ -4,7 +4,7 @@ import router from './router'
 import store from './store'
 import "./assets/tailwind.css"
 import firebaseApp from "./firebaseinit";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged} from "firebase/auth";
 
 const auth = getAuth(firebaseApp)
 

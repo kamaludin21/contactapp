@@ -23,6 +23,7 @@
 import firebaseApp from "./../firebaseinit"
 import { getAuth, signOut } from "firebase/auth";
 const auth = getAuth(firebaseApp);
+import store from './../store'
 
 export default {
   name: "ConfirmDialog",
@@ -30,7 +31,8 @@ export default {
     signOut: function() {
       signOut(auth)
         .then(() => {
-          this.$router.push({ path: "/auth/login" });
+          store.dispatch("logout")
+          this.$router.replace({ path: "/auth/login" });
         })
         .catch((error) => {
           console.log(error);
