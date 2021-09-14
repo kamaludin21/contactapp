@@ -40,7 +40,7 @@ export default createStore({
           uid: user.uid,
           displayName: user.displayName,
           email: user.email,
-          photoUrl: user.photoUrl,
+          photoURL: user.photoURL,
         });
       } else {
         commit("SET_USER", null);

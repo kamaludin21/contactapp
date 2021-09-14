@@ -48,6 +48,7 @@ import CircleUserIcon from "./../components/icons/CircleUserIcon.vue";
 import AnalyticIcon from "./../components/icons/AnalyticIcon.vue";
 import InfoIcon from "./../components/icons/InfoIcon.vue";
 import ExitIcon from "./../components/icons/ExitIcon.vue";
+
 import { mapGetters } from "vuex"
 
 export default {

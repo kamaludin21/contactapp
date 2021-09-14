@@ -9,12 +9,21 @@
       </div>
     </template>
   </app-bar>
-  <div class="max-h-full overflow-y-auto bg-rounded-white px-4 py-2 mb-2  ">
-    <p class="font-medium tracking-wide text-gray-600 pt-2">Photo</p>
-    <div class="flex items-center py-4 space-x-4">
+  <alert-states
+    v-if="isSuccess"
+    isAction="success"
+    title="Berhasil memperbarui profil"
+    @onClick="removeAlert"
+  />
+  <loading v-if="loading" />
+  <div class="bg-rounded-white px-4 py-2 mb-2" v-if="!loading">
+    <p class="font-medium tracking-wide text-gray-600 pt-2">
+      Photo
+    </p>
+    <div class="flex items-center w-full py-4 space-x-4">
       <img
         v-if="!previewUrl"
-        class="inline object-cover w-20 h-20 ring-4 ring-gray-200 border-gray-200 shadow-lg rounded-full"
+        class="flex-0 inline object-cover w-20 h-20 ring-4 ring-gray-200 border-gray-200 shadow-lg rounded-full"
         :src="
           photoURL
             ? photoURL
@@ -25,11 +34,11 @@
       />
       <img
         v-if="previewUrl"
-        class="inline object-cover w-20 h-20 ring-4 ring-gray-200 border-gray-200 shadow-lg rounded-full"
+        class="flex-0 inline object-cover w-20 h-20 ring-4 ring-gray-200 border-gray-200 shadow-lg rounded-full"
         :src="previewUrl"
         alt="Profile image"
       />
-      <div class="w-full h-auto space-y-3">
+      <div class="flex-1 flex items-center h-20 overflow-hidden">
         <input
           type="file"
           name="file"
@@ -37,13 +46,22 @@
           @change="onFileChange"
           class="input-file"
         />
-        <label for="file" class="input-button">{{
+        <!-- <label for="file" class="w-full input-button truncate overflow-hidden">
+          {{
           files ? files : "Change avatar"
-        }}</label>
-
-        <div class="space-y-1">
+        }}
+        </label> -->
+        <div class="space-y-1 w-full">
+          <label
+            for="file"
+            class="input-button overflow-hidden inline-block max-w-full"
+          >
+            <span class="whitespace-pre">
+              {{ files ? files : "Change avatar" }}
+            </span>
+          </label>
           <p class="text-xs font-medium text-blue-700" v-if="previewUrl">
-            Upload: 0%
+            Upload: {{ progress }}%
           </p>
           <div
             class="h-2 relative w-full rounded-full overflow-hidden"
@@ -51,7 +69,7 @@
           >
             <div class="w-full h-full bg-blue-200 absolute"></div>
             <div
-              style="width: 0%"
+              :style="{ width: '' + progress + '%' }"
               id="bar"
               class="h-full bg-blue-600 relative"
             ></div>
@@ -90,7 +108,7 @@
           RESET
         </button>
         <button
-          @click="updateProfile"
+          @click="updateProfil"
           class=" flex-1 bg-blue-600 py-3 rounded-lg font-semibold text-white"
         >
           SIMPAN
@@ -105,19 +123,40 @@ import AppBar from "../components/AppBar.vue";
 import ArrowLeftIcon from "../components/icons/ArrowLeftIcon.vue";
 import UserIcon from "../components/icons/UserIcon.vue";
 import ErrorInput from "../components/states/ErrorInput.vue";
+import Loading from "../components/Loading.vue";
+import AlertStates from '../components/states/AlertStates.vue';
 
-import { getAuth } from "firebase/auth";
+import store from './../store'
+import { reload, getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+
+
+const auth = getAuth();
+const user = auth.currentUser;
+const storage = getStorage();
 
 export default {
-  components: { AppBar, ArrowLeftIcon, ErrorInput, UserIcon },
+  components: { AppBar, ArrowLeftIcon, ErrorInput, UserIcon, Loading, AlertStates },
   name: "EditProfile",
   data() {
     return {
+      loading: false,
+      isSuccess: false,
+      error: null,
       errors: [],
       photoURL: null,
+      newPhotoURL: null,
       nama: null,
+      file: null,
       files: null,
       previewUrl: null,
+      extension: null,
+      progress: 0,
     };
   },
   mounted() {
@@ -125,41 +164,98 @@ export default {
   },
   methods: {
     currentUser: function() {
-      const auth = getAuth();
-      const user = auth.currentUser;
       if (user !== null) {
         this.nama = user.displayName;
         this.photoURL = user.photoURL;
       }
     },
     updateProfil: function() {
-      // import { getAuth, updateProfile } from "firebase/auth";
-      // const auth = getAuth();
-      // updateProfile(auth.currentUser, {
-      //   displayName: "Jane Q. User", photoURL: "https://example.com/jane-q-user/profile.jpg"
-      // }).then(() => {
-      // Profile updated!
-      // ...
-      // }).catch((error) => {
-      // An error occurred
-      // ...
-      // });
-    },
-
-    onFileChange: function(e) {
-      this.files = e.target.files[0].name;
-      const file = e.target.files[0];
-      this.previewUrl = URL.createObjectURL(file);
-    },
-    updateProfile: function() {
       this.errors = [];
+
       if (this.nama) {
-        // Code
+        try {
+          if (this.file) {
+            const uid = this.$store.state.user.data.uid;
+            const metadata = {
+              contentType: "image/jpeg",
+            };
+            const uploadRef = ref(
+              storage,
+              "/profile-picture/" + uid + "." + this.extension
+            );
+            const uploadTask = uploadBytesResumable(
+              uploadRef,
+              this.file,
+              metadata
+            );
+            uploadTask.on(
+              "state_changed",
+              (snapshot) => {
+                const progress = Math.floor(
+                  (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                );
+                this.progress = progress;
+              },
+              (error) => {
+                this.error = error;
+              },
+              () => {
+                this.loading = !this.loading;
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                  this.newPhotoURL = downloadURL;
+                  const auth = getAuth();
+                  updateProfile(auth.currentUser, {
+                    displayName: this.nama,
+                    photoURL: this.newPhotoURL,
+                  }).then(() => {
+                    this.loading = !this.loading;
+                    this.isSuccess = !this.isSuccess
+                    reload(auth.currentUser).then(() => {
+                      onAuthStateChanged(auth, (user) => {
+                        store.dispatch("fetchUser", user);
+                      });
+                    });
+                  });
+                });
+              }
+            );
+          } else {
+            this.loading = !this.loading;
+            const auth = getAuth();
+            updateProfile(auth.currentUser, {
+              displayName: this.nama,
+              photoURL: this.newPhotoURL,
+            }).then(() => {
+              this.loading = !this.loading
+              this.isSuccess = !this.isSuccess
+            })
+          }
+        } catch (error) {
+          console.log(error);
+        }
       }
-      if (!this.title) this.errors.push("nama");
+      if (!this.nama) this.errors.push("nama");
+    },
+    onFileChange: function(e) {
+      this.file = e.target.files[0];
+      const files = e.target.files[0].name;
+      this.extension = files.split(".").pop();
+      this.previewUrl = URL.createObjectURL(e.target.files[0]);
+    },
+    removeAlert: function() {
+      this.isSuccess = false
     },
     reset: function() {
-      (this.files = null), (this.previewUrl = null);
+      this.photoURL = null;
+      this.nama = null;
+      this.file = null;
+      
+      this.previewUrl = null;
+      this.extension = null;
+      this.progress = 0;
+      this.isSuccess = false
+
+      this.currentUser();
     },
   },
 };
@@ -171,6 +267,6 @@ export default {
 }
 
 .input-button {
-  @apply bg-blue-600 hover:bg-blue-500 px-3 py-2 rounded-full font-semibold text-xs text-white cursor-pointer;
+  @apply bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-full font-semibold text-xs text-white cursor-pointer;
 }
 </style>
