@@ -46,11 +46,6 @@
           @change="onFileChange"
           class="input-file"
         />
-        <!-- <label for="file" class="w-full input-button truncate overflow-hidden">
-          {{
-          files ? files : "Change avatar"
-        }}
-        </label> -->
         <div class="space-y-1 w-full">
           <label
             for="file"
@@ -71,7 +66,7 @@
             <div
               :style="{ width: '' + progress + '%' }"
               id="bar"
-              class="h-full bg-blue-600 relative"
+              class="duration-300 h-full bg-blue-600 relative"
             ></div>
           </div>
         </div>
@@ -109,7 +104,7 @@
         </button>
         <button
           @click="updateProfil"
-          class=" flex-1 bg-blue-600 py-3 rounded-lg font-semibold text-white"
+          class="flex-1 bg-blue-600 py-3 rounded-lg font-semibold text-white"
         >
           SIMPAN
         </button>
@@ -124,10 +119,15 @@ import ArrowLeftIcon from "../components/icons/ArrowLeftIcon.vue";
 import UserIcon from "../components/icons/UserIcon.vue";
 import ErrorInput from "../components/states/ErrorInput.vue";
 import Loading from "../components/Loading.vue";
-import AlertStates from '../components/states/AlertStates.vue';
+import AlertStates from "../components/states/AlertStates.vue";
 
-import store from './../store'
-import { reload, getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
+import store from "./../store";
+import {
+  reload,
+  getAuth,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
 import {
   getStorage,
   ref,
@@ -135,13 +135,19 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 
-
 const auth = getAuth();
 const user = auth.currentUser;
 const storage = getStorage();
 
 export default {
-  components: { AppBar, ArrowLeftIcon, ErrorInput, UserIcon, Loading, AlertStates },
+  components: {
+    AppBar,
+    ArrowLeftIcon,
+    ErrorInput,
+    UserIcon,
+    Loading,
+    AlertStates,
+  },
   name: "EditProfile",
   data() {
     return {
@@ -200,23 +206,28 @@ export default {
                 this.error = error;
               },
               () => {
-                this.loading = !this.loading;
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                  this.newPhotoURL = downloadURL;
-                  const auth = getAuth();
-                  updateProfile(auth.currentUser, {
-                    displayName: this.nama,
-                    photoURL: this.newPhotoURL,
-                  }).then(() => {
-                    this.loading = !this.loading;
-                    this.isSuccess = !this.isSuccess
-                    reload(auth.currentUser).then(() => {
-                      onAuthStateChanged(auth, (user) => {
-                        store.dispatch("fetchUser", user);
+                setTimeout(() => {
+                  this.reset()
+                  this.loading = !this.loading;
+                  getDownloadURL(uploadTask.snapshot.ref).then(
+                    (downloadURL) => {
+                      this.newPhotoURL = downloadURL;
+                      const auth = getAuth();
+                      updateProfile(auth.currentUser, {
+                        displayName: this.nama,
+                        photoURL: this.newPhotoURL,
+                      }).then(() => {
+                        this.loading = !this.loading;
+                        this.isSuccess = !this.isSuccess;
+                        reload(auth.currentUser).then(() => {
+                          onAuthStateChanged(auth, (user) => {
+                            store.dispatch("fetchUser", user);
+                          });
+                        });
                       });
-                    });
-                  });
-                });
+                    }
+                  );
+                }, 1000);
               }
             );
           } else {
@@ -226,9 +237,9 @@ export default {
               displayName: this.nama,
               photoURL: this.newPhotoURL,
             }).then(() => {
-              this.loading = !this.loading
-              this.isSuccess = !this.isSuccess
-            })
+              this.loading = !this.loading;
+              this.isSuccess = !this.isSuccess;
+            });
           }
         } catch (error) {
           console.log(error);
@@ -243,17 +254,17 @@ export default {
       this.previewUrl = URL.createObjectURL(e.target.files[0]);
     },
     removeAlert: function() {
-      this.isSuccess = false
+      this.isSuccess = false;
     },
     reset: function() {
       this.photoURL = null;
       this.nama = null;
       this.file = null;
-      
+
       this.previewUrl = null;
       this.extension = null;
       this.progress = 0;
-      this.isSuccess = false
+      this.isSuccess = false;
 
       this.currentUser();
     },

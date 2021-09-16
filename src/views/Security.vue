@@ -9,7 +9,20 @@
       </div>
     </template>
   </app-bar>
-  <div class="max-h-full overflow-y-auto bg-rounded-white p-4 mb-2">
+  <alert-states
+    v-if="errorFirebase"
+    isAction="warning"
+    :title="errorFirebase"
+    @click="errorFirebase = null"
+  />
+  <alert-states
+    v-if="isSuccess"
+    isAction="success"
+    title="Berhasil mengubah password"
+    @click="isSuccess = false"
+  />
+  <loading v-if=loading />
+  <div class="max-h-full overflow-y-auto bg-rounded-white p-4 mb-2" v-if=!loading>
     <!-- Alert -->
     <form @submit.prevent="changePassword" class="space-y-2">
       <p class="font-medium text-sm">Password lama</p>
@@ -109,10 +122,15 @@
         "
       />
       <div class="flex w-full space-x-2 items-center pt-2">
-        <button type="reset" class="button-form bg-blue-50 ring-inset" @click=reset>
+        <button
+          type="reset"
+          class="button-form bg-blue-50 ring-inset"
+          @click="reset"
+        >
           RESET
         </button>
         <button
+          type="submit"
           class="button-form bg-blue-600 hover:bg-blue-700 text-gray-50"
         >
           SIMPAN
@@ -127,14 +145,27 @@ import AppBar from "../components/AppBar.vue";
 import ArrowLeftIcon from "../components/icons/ArrowLeftIcon.vue";
 import LockIcon from "../components/icons/LockIcon.vue";
 import ErrorInput from "../components/states/ErrorInput.vue";
+import AlertStates from '../components/states/AlertStates.vue';
+import Loading from '../components/Loading.vue';
+import app from "./../firebaseinit";
+import {
+  getAuth,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  updatePassword
+} from "firebase/auth";
+const auth = getAuth(app);
+const user = auth.currentUser;
 
 export default {
   name: "Security",
-  components: { AppBar, ArrowLeftIcon, LockIcon, ErrorInput },
+  components: { AppBar, ArrowLeftIcon, LockIcon, ErrorInput, AlertStates, Loading },
   data() {
     return {
+      loading: false,
       errors: [],
       errorFirebase: null,
+      isSuccess: null,
       success: false,
       oldPassword: null,
       newPassword: null,
@@ -142,16 +173,37 @@ export default {
     };
   },
   methods: {
-    changePassword: function() {
+    changePassword: async function() {
       this.errors = [];
-      if (this.oldPassword) {
-        // Code
+      if (this.oldPassword && this.newPassword == this.confirmNewPassword) {
+        this.loading = !this.loading
+        try {
+          const credential = EmailAuthProvider.credential(
+            user.email,
+            this.oldPassword
+          );
+          reauthenticateWithCredential(user, credential).then(() => {
+            updatePassword(user, this.newPassword).then(() => {
+              this.isSuccess = true
+            }).catch((error) => {
+              this.loading = !this.loading
+              this.errorFirebase = error.message
+            });
+          }).catch((error) => {
+            this.loading = !this.loading
+            this.errorFirebase = error.message
+          });
+        } catch (error) {
+          this.loading = !this.loading
+          this.errorFirebase = error.message
+        }
+      } else {
+        if (!this.oldPassword) this.errors.push("oldPassword");
+        if (!this.newPassword) this.errors.push("newPassword");
+        if (!this.confirmNewPassword) this.errors.push("confirmNewPassword");
+        if (this.newPassword !== this.confirmNewPassword)
+          this.errors.push("failconfirm");
       }
-      if (!this.oldPassword) this.errors.push("oldPassword");
-      if (!this.newPassword) this.errors.push("newPassword");
-      if (!this.confirmNewPassword) this.errors.push("confirmNewPassword");
-      if (this.newPassword !== this.confirmNewPassword)
-        this.errors.push("failconfirm");
     },
     reset: function() {
       this.errors = [];

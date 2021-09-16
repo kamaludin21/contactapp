@@ -2,11 +2,16 @@
   <app-bar title="Profile" />
   <div class="max-h-full overflow-y-auto bg-rounded-white mb-2">
     <circle-image-profile
-      :displayName=user.data.displayName
-      :email=user.data.email
-      :photoUrl="(user.data.photoURL) ? user.data.photoURL : 'https://ui-avatars.com/api/?background=2563EB&color=fff&name='+ user.data.displayName +''"
+      :displayName="user.data.displayName"
+      :email="user.data.email"
+      :photoUrl="
+        user.data.photoURL
+          ? user.data.photoURL
+          : 'https://ui-avatars.com/api/?background=2563EB&color=fff&name=' +
+            user.data.displayName +
+            ''
+      "
     />
-    <!-- List  -->
     <p class="section-title">Akun</p>
     <div class="border-t border-b border-gray-200">
       <ul class="divide-y divide-gray-200 divide-solid">
@@ -49,13 +54,13 @@ import AnalyticIcon from "./../components/icons/AnalyticIcon.vue";
 import InfoIcon from "./../components/icons/InfoIcon.vue";
 import ExitIcon from "./../components/icons/ExitIcon.vue";
 
-import { mapGetters } from "vuex"
+import { mapGetters } from "vuex";
 
 export default {
   name: "Profile",
   computed: {
     ...mapGetters({
-      user: 'user'
+      user: "user",
     }),
   },
   components: {
@@ -69,7 +74,7 @@ export default {
   },
   methods: {
     showDialog: function(type) {
-      this.$store.commit("POPUP_DIALOG")
+      this.$store.commit("POPUP_DIALOG");
       if (type == "about") return this.$store.commit("ABOUT_APP");
       if (type == "logout") return this.$store.commit("CONFIRM_LOGOUT");
     },
