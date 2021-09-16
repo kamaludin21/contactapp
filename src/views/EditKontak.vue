@@ -13,7 +13,7 @@
       <div
         class="h-full hover:text-red-700 flex items-center pr-1 cursor-pointer"
         title="Hapus Kontak"
-        @click="deleteContact({id})"
+        @click="deleteContact(id)"
       >
         <trash-icon />
         
@@ -142,7 +142,6 @@ export default {
       const uid = this.$store.state.user.data.uid;
       const docRef = doc(db, uid, id);
       const docSnap = await getDoc(docRef);
-      console.log(docSnap.id);
       if (docSnap.exists()) {
         this.id = docSnap.id;
         this.name = docSnap.data().name;
@@ -180,20 +179,14 @@ export default {
       }
     },
     deleteContact: async function(id) {
-       this.loading = !this.loading;
-        try {
-          const uid = this.$store.state.user.data.uid;
-          const docRef = doc(db, uid, id);
-          await deleteDoc(docRef).then(() => {
-            this.$router.push({ path: "/beranda" });
-          });
-        } catch (error) {
-          this.ifAlert = !this.ifAlert;
-          console.log(error);
-        } finally {
-          this.loading = !this.loading;
-          this.$router.push({ path: "/beranda" });
-        }
+      this.loading = !this.loading;
+      const uid = this.$store.state.user.data.uid;
+      await deleteDoc(doc(db, uid, id)).then(() => {
+        this.loading = !this.loading;
+        this.$router.push({ path: "/beranda" });
+      }).catch((e) => {
+        console.log(e.message)
+      });
     },
     removeAlert: function() {
       this.ifAlert = false;
