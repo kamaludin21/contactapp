@@ -66,7 +66,7 @@
             <div
               :style="{ width: '' + progress + '%' }"
               id="bar"
-              class="duration-300 h-full bg-blue-600 relative"
+              class="duration-300 rounded-full h-full bg-blue-600 relative"
             ></div>
           </div>
         </div>
@@ -104,9 +104,30 @@
         </button>
         <button
           @click="updateProfil"
-          class="flex-1 bg-blue-600 py-3 rounded-lg font-semibold text-white"
+          class="flex-1 justify-center mx-auto inline-flex items-center  bg-blue-600 py-3 rounded-lg font-semibold text-white"
         >
-          SIMPAN
+          <svg
+            v-if="isInProcess"
+            class="animate-spin mr-2 h-5 w-5"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-30"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+          <span>SIMPAN</span>
         </button>
       </div>
     </div>
@@ -153,6 +174,7 @@ export default {
     return {
       loading: false,
       isSuccess: false,
+      isInProcess: false,
       error: null,
       errors: [],
       photoURL: null,
@@ -179,6 +201,7 @@ export default {
       this.errors = [];
 
       if (this.nama) {
+        this.isInProcess = !this.isInProcess;
         try {
           if (this.file) {
             const uid = this.$store.state.user.data.uid;
@@ -207,7 +230,6 @@ export default {
               },
               () => {
                 setTimeout(() => {
-                  this.reset()
                   this.loading = !this.loading;
                   getDownloadURL(uploadTask.snapshot.ref).then(
                     (downloadURL) => {
@@ -217,8 +239,10 @@ export default {
                         displayName: this.nama,
                         photoURL: this.newPhotoURL,
                       }).then(() => {
+                        this.reset();
                         this.loading = !this.loading;
                         this.isSuccess = !this.isSuccess;
+                        this.isInProcess = !this.isInProcess;
                         reload(auth.currentUser).then(() => {
                           onAuthStateChanged(auth, (user) => {
                             store.dispatch("fetchUser", user);
@@ -227,7 +251,7 @@ export default {
                       });
                     }
                   );
-                }, 1000);
+                }, 500);
               }
             );
           } else {
