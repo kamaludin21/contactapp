@@ -8,7 +8,7 @@ Test Stack for running at vercel paltform
 - [Vue.JS 3](https://vuejs.org/)
 - [Firebase 9](https://firebase.google.com/)
 
-
+DEMO [HERE](https://contactapp.vercel.app/)
 
 ## Project setup - compile - build production
 ```
